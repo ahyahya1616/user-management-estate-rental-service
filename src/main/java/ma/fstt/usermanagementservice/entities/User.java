@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -31,11 +29,9 @@ public class User {
     @Column(length = 200)
     private String email;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
+    @Column(length = 200)
+    private String role;
+
 
     @Column(nullable = false)
     @Builder.Default

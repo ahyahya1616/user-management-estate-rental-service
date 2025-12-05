@@ -57,7 +57,7 @@ public class UserService {
 
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
-        user.setRoles(userDetails.getRoles());
+        user.setRole(userDetails.getRole());
         user.setEnabled(userDetails.getEnabled());
         user.setUpdatedAt(Instant.now());
 
