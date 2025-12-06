@@ -26,11 +26,19 @@ public class User {
     @Column(length = 100)
     private String username;
 
+    @Column(length = 50)
+    private String firstName;
+
+    @Column(length = 50)
+    private String lastName;
+
     @Column(length = 200)
     private String email;
 
     @Column(length = 200)
     private String role;
+
+    private String description;
 
 
     @Column(nullable = false)
