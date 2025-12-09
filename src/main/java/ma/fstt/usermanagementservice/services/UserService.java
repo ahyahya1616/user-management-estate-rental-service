@@ -2,15 +2,20 @@ package ma.fstt.usermanagementservice.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ma.fstt.usermanagementservice.dto.UserCreateDto;
+import ma.fstt.usermanagementservice.dto.UserResponseDto;
+import ma.fstt.usermanagementservice.dto.UserUpdateDto;
 import ma.fstt.usermanagementservice.entities.User;
 import ma.fstt.usermanagementservice.exception.UserAlreadyExistsException;
 import ma.fstt.usermanagementservice.exception.UserNotFoundException;
+import ma.fstt.usermanagementservice.mapper.UserMapper;
 import ma.fstt.usermanagementservice.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,89 +23,81 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     /**
-     * Récupérer tous les utilisateurs
+     * Récupérer tous les utilisateurs (Response DTO)
      */
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     /**
      * Récupérer un utilisateur par wallet
      */
-    public User getUserByWallet(String wallet) {
-        return userRepository.findByWallet(wallet)
-                .orElseThrow(() -> new UserNotFoundException(wallet));
+    public UserResponseDto getUserByWallet(String wallet) {
+        User user = userRepository.findByWallet(wallet)
+                .orElseThrow(() -> new UserNotFoundException("User does not exist with this wallet : "+wallet));
+        return userMapper.toResponseDto(user);
     }
-
 
     /**
      * Créer un nouvel utilisateur
      */
-
     @Transactional
-    public User createUser(User user) {
+    public UserResponseDto createUser(UserCreateDto dto) {
 
-        log.info("📥 [REGISTER] Requête reçue pour créer un utilisateur");
+        log.info("[REGISTER] Création utilisateur via DTO");
 
-        if (user == null) {
-            log.error("❌ User reçu est null !");
-            throw new IllegalArgumentException("User object is null");
+        if (dto == null) {
+            throw new IllegalArgumentException("UserCreateDto is null");
         }
 
-        log.info("➡️ Données reçues : wallet={}, username={}, email={}, firstName={}, lastName={}, description={}",
-                user.getWallet(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getDescription()
-        );
-
-        log.info("🔍 Vérification si le wallet existe déjà en base...");
-        boolean exists = userRepository.existsByWallet(user.getWallet());
-        log.info("➡️ existsByWallet({}) = {}", user.getWallet(), exists);
-
+        boolean exists = userRepository.existsByWallet(dto.getWallet());
         if (exists) {
-            log.warn("❌ Impossible de créer : ce wallet existe déjà !");
-            throw new UserAlreadyExistsException(user.getWallet());
+            throw new UserAlreadyExistsException(dto.getWallet());
         }
 
+        // Conversion DTO → Entity
+        User user = userMapper.toEntity(dto);
+        user.setRole("ROLE_USER");
         user.setCreatedAt(Instant.now());
-        log.info("⏳ Date de création set: {}", user.getCreatedAt());
+        user.setEnabled(true);
 
-        log.info("💾 Sauvegarde de l'utilisateur en base...");
         User saved = userRepository.save(user);
+        log.info("[REGISTER] Utilisateur créé avec succès : id={}, wallet={}", saved.getId(), saved.getWallet());
 
-        log.info("✅ [REGISTER] Utilisateur créé avec succès : id={}, wallet={}",
-                saved.getId(), saved.getWallet());
-
-        return saved;
+        return userMapper.toResponseDto(saved);
     }
-
 
     /**
      * Mettre à jour un utilisateur
      */
     @Transactional
-     public User updateUser(Long id, User userDetails) {
-     User user = userRepository.findById(id)
-     .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-     user.setUsername(userDetails.getUsername());
-     user.setEmail(userDetails.getEmail());
-     user.setRole(userDetails.getRole());
-     user.setEnabled(userDetails.getEnabled());
-     user.setUpdatedAt(Instant.now());
-     return userRepository.save(user);
-     }
+    public UserResponseDto updateUser(Long id, UserUpdateDto dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
-     @Transactional
-     public void deleteUser(Long id) {
-     if (!userRepository.existsById(id)) {
-     throw new UserNotFoundException("User not found with id: " + id);
-     }
-     userRepository.deleteById(id);
-     }
+        userMapper.updateEntityFromDto(dto, user);
+        user.setUpdatedAt(Instant.now());
+        userRepository.save(user);
 
+
+        User saved = userRepository.save(user);
+        return userMapper.toResponseDto(saved);
+    }
+
+    /**
+     * Supprimer un utilisateur
+     */
+    @Transactional
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
 }

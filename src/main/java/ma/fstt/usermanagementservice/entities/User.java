@@ -1,6 +1,7 @@
 package ma.fstt.usermanagementservice.entities;
 
 import jakarta.persistence.*;
+import jakarta.ws.rs.DefaultValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class User {
     private String email;
 
     @Column(length = 200)
+    @DefaultValue(value = "ROLE_USER")
     private String role;
 
     private String description;

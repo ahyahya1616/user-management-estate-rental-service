@@ -1,0 +1,103 @@
+### ================== USERS ==================
+
+# 1. Lister tous les utilisateurs
+GET http://localhost:8081/api/users
+Accept: application/json
+
+###
+
+# 2. Créer un utilisateur valide
+POST http://localhost:8081/api/users
+Content-Type: application/json
+
+{
+  "wallet": "0xABC123",
+  "username": "john_doe",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "description": "Utilisateur test"
+}
+
+###
+
+# 3. Créer un utilisateur avec un wallet déjà existant (devrait déclencher UserAlreadyExistsException)
+POST http://localhost:8081/api/users
+Content-Type: application/json
+
+{
+  "wallet": "0xABC123",
+  "username": "duplicate_user",
+  "firstName": "Dup",
+  "lastName": "User",
+  "email": "dup@example.com",
+  "description": "Devrait échouer"
+}
+
+###
+
+# 4. Récupérer un utilisateur par wallet
+GET http://localhost:8081/api/users/wallet/0xABC123
+Accept: application/json
+
+###
+
+# 5. Récupérer un utilisateur avec un wallet inexistant (devrait déclencher UserNotFoundException)
+GET http://localhost:8081/api/users/wallet/0xFAKEWALLET
+Accept: application/json
+
+###
+
+# 6. Mettre à jour un utilisateur (PATCH) - seulement certains champs
+PATCH http://localhost:8081/api/users/1
+Content-Type: application/json
+
+{
+  "username": "john_updated",
+  "email": "newmail@example.com"
+}
+
+###
+
+# 7. Mettre à jour un utilisateur inexistant (devrait déclencher UserNotFoundException)
+PATCH http://localhost:8081/api/users/999
+Content-Type: application/json
+
+{
+  "username": "should_fail"
+}
+
+###
+
+# 8. Supprimer un utilisateur
+DELETE http://localhost:8081/api/users/1
+
+###
+
+# 9. Supprimer un utilisateur inexistant (devrait déclencher UserNotFoundException)
+DELETE http://localhost:8081/api/users/999
+
+### ================== NONCE ==================
+
+# 10. Stocker un nonce pour un utilisateur existant
+POST http://localhost:8081/api/users/nonce?wallet=0xABC123&nonce=123456
+
+###
+
+# 11. Récupérer un nonce valide
+GET http://localhost:8081/api/users/nonce?wallet=0xABC123
+
+###
+
+# 12. Récupérer un nonce expiré ou inexistant (devrait déclencher NonceNotFoundException)
+GET http://localhost:8081/api/users/nonce?wallet=0xFAKEWALLET
+
+###
+
+# 13. Supprimer un nonce pour un utilisateur existant
+DELETE http://localhost:8081/api/users/nonce?wallet=0xABC123
+
+###
+
+# 14. Supprimer un nonce pour un utilisateur inexistant (devrait déclencher UserNotFoundException)
+DELETE http://localhost:8081/api/users/nonce?wallet=0xFAKEWALLET
