@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 public class NonceService {
 
     private final UserRepository userRepository;
-    private static final int NONCE_EXPIRATION_MINUTES = 1;
+    private static final int NONCE_EXPIRATION_MINUTES = 5;
 
     /**
      * Stocke un nonce pour un wallet donné

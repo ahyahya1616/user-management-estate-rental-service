@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
     // Gérer UserNotFoundException
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiError> handleUserNotFound(UserNotFoundException ex) {
-        ApiError error = new ApiError(ErrorCode.USER_ALREADY_EXISTS, ex.getMessage());
+        ApiError error = new ApiError(ErrorCode.USER_NOT_FOUND, ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
