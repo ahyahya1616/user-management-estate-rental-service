@@ -9,4 +9,5 @@ import ma.fstt.usermanagementservice.exception.ErrorCode;
 public class ApiError {
     private ErrorCode error;
     private String message;
+    private int status;
 }
