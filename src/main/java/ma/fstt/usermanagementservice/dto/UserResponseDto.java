@@ -20,4 +20,12 @@ public class UserResponseDto {
     private Boolean enabled;
     private Instant createdAt;
     private Instant updatedAt;
+
+    private Double targetRent;
+    private Integer minTotalRooms;
+    private Double targetSqft;
+    private Double searchLatitude;
+    private Double searchLongitude;
+    private String preferredPropertyType;
+    private String preferredRentalType;
 }

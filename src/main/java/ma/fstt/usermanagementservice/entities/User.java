@@ -41,6 +41,16 @@ public class User {
 
     private String description;
 
+    //data added by 3ezi for the ai recommendation engin
+
+    private Double targetRent;
+    private Integer minTotalRooms;
+    private Double targetSqft;
+    private Double searchLatitude;
+    private Double searchLongitude;
+    private String preferredPropertyType;
+    private String preferredRentalType;
+
 
     @Column(nullable = false)
     @Builder.Default
