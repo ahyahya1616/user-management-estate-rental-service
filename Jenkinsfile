@@ -1,6 +1,6 @@
 @Library('jenkins-shared-library') _
 
 standardBackendPipeline(
-    appName: 'authorization-service',
+    appName: 'user-management-service',
     registry: 'yassinekamouss'
 )
