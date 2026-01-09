@@ -44,6 +44,13 @@ public class UserService {
         return userMapper.toResponseDto(user);
     }
 
+    public UserResponseDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User does not exist with this wallet : "+id));
+        return userMapper.toResponseDto(user);
+    }
+
+
     /**
      * Créer un nouvel utilisateur
      */

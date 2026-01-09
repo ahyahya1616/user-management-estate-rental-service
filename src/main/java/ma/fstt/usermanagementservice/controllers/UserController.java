@@ -36,6 +36,12 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto userDto = userService.getUserById(id);
+        return ResponseEntity.ok(userDto);
+    }
+
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserCreateDto dto) {
         UserResponseDto createdUser = userService.createUser(dto);
