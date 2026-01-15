@@ -2,6 +2,6 @@
 
 standardBackendPipeline(
     appName: 'user-management-service',
-    registry: 'saaymo',
+    registry: 'yassinekamouss',
      sonarProjectKey: 'user-service'
 )
