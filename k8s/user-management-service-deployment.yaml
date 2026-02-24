@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-management-service
+  namespace: dev
+  labels:
+    app: user-management-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-management-service
+  template:
+    metadata:
+      labels:
+        app: user-management-service
+    spec:
+      containers:
+        - name: user-management-service
+          image: user-management-service:1.0.0
+          ports:
+            - containerPort: 8081
+          env:
+            # ConfigMap pour les variables non sensibles
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: user-management-config
+                  key: SPRING_PROFILES_ACTIVE
+            - name: CONFIG_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-management-config
+                  key: CONFIG_SERVER_URL
+            - name: SPRING_APPLICATION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: user-management-config
+                  key: SPRING_APPLICATION_NAME
+            - name: PROD_DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-management-config
+                  key: PROD_DB_URL
+            # Secret pour username et password
+            - name: PROD_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: user-management-secrets
+                  key: PROD_DB_USERNAME
+            - name: PROD_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-management-secrets
+                  key: PROD_DB_PASSWORD
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 20
+            periodSeconds: 10

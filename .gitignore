@@ -4,6 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+k8s/user-management-service-secret.yaml
+k8s/mysql/**
 ### STS ###
 .apt_generated
 .classpath
